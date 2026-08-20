@@ -1,13 +1,17 @@
 package com.company.coursemanagement.domain.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "student")
@@ -28,6 +32,9 @@ public class Student {
 
     @Column(name = "birth_date", nullable = false)
     private LocalDate birthDate;
+
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, fetch = jakarta.persistence.FetchType.LAZY)
+    private List<Enrollment> enrollments = new ArrayList<>();
 
     public Student() {
     }
@@ -54,4 +61,7 @@ public class Student {
 
     public LocalDate getBirthDate() { return birthDate; }
     public void setBirthDate(LocalDate birthDate) { this.birthDate = birthDate; }
+
+    public List<Enrollment> getEnrollments() { return enrollments; }
+    public void setEnrollments(List<Enrollment> enrollments) { this.enrollments = enrollments; }
 }

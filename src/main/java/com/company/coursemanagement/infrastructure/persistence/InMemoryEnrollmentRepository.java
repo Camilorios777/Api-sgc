@@ -43,7 +43,7 @@ public class InMemoryEnrollmentRepository implements EnrollmentRepository {
     @Override
     public long countByCourseIdAndStatus(Long courseId, EnrollmentStatus status) {
         return storage.values().stream()
-                .filter(e -> e.getCourseId().equals(courseId) && e.getStatus() == status)
+                .filter(e -> e.getCourse().getId().equals(courseId) && e.getStatus() == status)
                 .count();
     }
 }
