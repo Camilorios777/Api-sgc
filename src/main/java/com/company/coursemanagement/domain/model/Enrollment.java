@@ -11,11 +11,13 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "enrollment")
+@Table(name = "enrollments",
+        uniqueConstraints = @UniqueConstraint(columnNames = {"student_id", "course_id"}))
 public class Enrollment {
 
     @Id
@@ -34,7 +36,7 @@ public class Enrollment {
     private LocalDate enrollmentDate;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, length = 20)
+    @Column(nullable = false)
     private EnrollmentStatus status;
 
     public Enrollment() {
@@ -62,4 +64,8 @@ public class Enrollment {
 
     public EnrollmentStatus getStatus() { return status; }
     public void setStatus(EnrollmentStatus status) { this.status = status; }
+
+    // Métodos de conveniencia, para no romper el código que ya usaba solo el ID
+    public Long getStudentId() { return student != null ? student.getId() : null; }
+    public Long getCourseId() { return course != null ? course.getId() : null; }
 }
