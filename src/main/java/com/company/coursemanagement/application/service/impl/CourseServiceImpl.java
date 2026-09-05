@@ -2,14 +2,13 @@ package com.company.coursemanagement.application.service.impl;
 
 import com.company.coursemanagement.application.dto.CourseDTO;
 import com.company.coursemanagement.application.service.CourseService;
+import com.company.coursemanagement.domain.exception.BusinessException;
 import com.company.coursemanagement.domain.exception.CourseNotFoundException;
 import com.company.coursemanagement.domain.model.Course;
 import com.company.coursemanagement.domain.repository.CourseRepository;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
 public class CourseServiceImpl implements CourseService {
 
     private final CourseRepository courseRepository;
@@ -20,10 +19,9 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public CourseDTO create(CourseDTO dto) {
-        validateNullOrEmptyFields(dto);
-        Course course = new Course(dto.getId(), dto.getCode(), dto.getName(), dto.getDescription(), dto.getMaxCapacity());
-        Course saved = courseRepository.save(course);
-        return toDTO(saved);
+        validateCourse(dto);
+        Course course = new Course(null, dto.getCode(), dto.getName(), dto.getDescription(), dto.getMaxCapacity());
+        return toDTO(courseRepository.save(course));
     }
 
     @Override
@@ -35,9 +33,7 @@ public class CourseServiceImpl implements CourseService {
 
     @Override
     public List<CourseDTO> findAll() {
-        return courseRepository.findAll().stream()
-                .map(this::toDTO)
-                .toList();
+        return courseRepository.findAll().stream().map(this::toDTO).toList();
     }
 
     @Override
@@ -45,10 +41,9 @@ public class CourseServiceImpl implements CourseService {
         if (!courseRepository.existsById(id)) {
             throw new CourseNotFoundException(id);
         }
-        validateNullOrEmptyFields(dto);
+        validateCourse(dto);
         Course course = new Course(id, dto.getCode(), dto.getName(), dto.getDescription(), dto.getMaxCapacity());
-        Course updated = courseRepository.save(course);
-        return toDTO(updated);
+        return toDTO(courseRepository.save(course));
     }
 
     @Override
@@ -59,22 +54,20 @@ public class CourseServiceImpl implements CourseService {
         courseRepository.deleteById(id);
     }
 
-    private void validateNullOrEmptyFields(CourseDTO dto) {
-        if (dto == null) {
-            throw new IllegalArgumentException("Los datos del curso no pueden ser nulos.");
-        }
+    private void validateCourse(CourseDTO dto) {
         if (dto.getCode() == null || dto.getCode().isBlank()) {
-            throw new IllegalArgumentException("El código del curso es obligatorio.");
+            throw new BusinessException("El codigo del curso es obligatorio");
         }
         if (dto.getName() == null || dto.getName().isBlank()) {
-            throw new IllegalArgumentException("El nombre del curso es obligatorio.");
+            throw new BusinessException("El nombre del curso es obligatorio");
         }
-        if (dto.getMaxCapacity() == null) {
-            throw new IllegalArgumentException("La capacidad máxima es obligatoria.");
+        if (dto.getMaxCapacity() == null || dto.getMaxCapacity() < 1) {
+            throw new BusinessException("La capacidad maxima debe ser al menos 1");
         }
     }
 
     private CourseDTO toDTO(Course course) {
-        return new CourseDTO(course.getId(), course.getCode(), course.getName(), course.getDescription(), course.getMaxCapacity());
+        return new CourseDTO(course.getId(), course.getCode(), course.getName(),
+                course.getDescription(), course.getMaxCapacity());
     }
 }

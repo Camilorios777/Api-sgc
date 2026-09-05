@@ -20,23 +20,26 @@ public class StudentController {
 
     @PostMapping
     public ResponseEntity<StudentDTO> create(@RequestBody StudentDTO dto) {
-        StudentDTO created = studentService.create(dto);
+        var created = studentService.create(dto);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<StudentDTO> findById(@PathVariable Long id) {
-        return ResponseEntity.ok(studentService.findById(id));
+        var student = studentService.findById(id);
+        return ResponseEntity.ok(student);
     }
 
     @GetMapping
     public ResponseEntity<List<StudentDTO>> findAll() {
-        return ResponseEntity.ok(studentService.findAll());
+        var students = studentService.findAll();
+        return ResponseEntity.ok(students);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<StudentDTO> update(@PathVariable Long id, @RequestBody StudentDTO dto) {
-        return ResponseEntity.ok(studentService.update(id, dto));
+        var updated = studentService.update(id, dto);
+        return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")
