@@ -5,9 +5,11 @@ import com.company.coursemanagement.application.service.StudentService;
 import com.company.coursemanagement.domain.exception.BusinessException;
 import com.company.coursemanagement.domain.exception.StudentNotFoundException;
 import com.company.coursemanagement.presentation.exception.ErrorResponse;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.company.coursemanagement.application.dto.CreateStudentDTO;
 
 import java.util.List;
 
@@ -22,9 +24,10 @@ public class StudentController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> create(@RequestBody StudentDTO dto) {
+    public ResponseEntity<Object> create(@Valid @RequestBody CreateStudentDTO dto) {
         try {
-            var created = studentService.create(dto);
+            var studentDTO = new StudentDTO(null, dto.firstName(), dto.lastName(), dto.email(), dto.birthDate());
+            var created = studentService.create(studentDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(created);
         } catch (BusinessException e) {
             return ResponseEntity.badRequest().body(ErrorResponse.of(e.getMessage()));
